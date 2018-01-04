@@ -1,0 +1,23 @@
+{
+  "name": "my_ripple_experiment",
+  "version": "1.0.0",
+  "description": "This is my first project for ripple-experiment",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "babel-preset-es2015": "^6.24.1",
+    "ripple-lib": "^0.17.9"
+  },
+  "babel": {
+    "presets": ["es2015"]
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "eslint": "*"
+  }
+}
