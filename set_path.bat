@@ -1,0 +1,1 @@
+path=%path%;D:\NodeTest\my_ripple_experiment\node_modules\.bin;

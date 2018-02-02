@@ -1,23 +1,25 @@
 {
   "name": "my_ripple_experiment",
-  "version": "1.0.0",
-  "description": "This is my first project for ripple-experiment",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "version": "0.0.1",
+  "license": "MIT",
+  "private": true,
+  "//": "Change the license to something appropriate. You may want to use 'UNLICENSED' if you are just starting out.",
   "dependencies": {
-    "babel-preset-es2015": "^6.24.1",
-    "ripple-lib": "^0.17.9"
+    "babel-cli": "^6.0.0",
+    "babel-preset-es2015": "*",
+    "formidable": "^1.1.1",
+    "gulp": "^3.9.1",
+    "lodash": "^4.17.4",
+    "nodemailer": "^4.4.2",
+    "ripple-lib": "*",
+    "upper-case": "^1.1.3"
   },
   "babel": {
-    "presets": ["es2015"]
+    "presets": [
+      "es2015"
+    ]
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
     "eslint": "*"
   }
 }

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.15.0/lodash.js"></script>
+  <script src="./node_modules/ripple-lib/build/ripple-0.17.8.js"></script>
+  <script>
+        var api = new ripple.RippleAPI({ server: 'wss://s2.ripple.com/' });
+
+        var myAddress = 'rh5iaKvcnv7EyUxEUY6Ny6JugHxN4vt1cP';
+        var mySecret = 'shM8qsZC26YC9BUq4MunDSP9QMkQx';
+        var maxLedgerVer = '';
+
+        // api.connect().then(function () {
+        //     return api.getServerInfo();
+        //     }).then(function (server_info) {
+        //         // document.getElementById("layerBody").innerHTML += "<p>Connected to rippled server!</p>" +
+        //         //     "      <table>" +
+        //         //     "        <tr><th>Version</th>" +
+        //         //     "          <td>" + server_info.buildVersion + "</td></tr>" +
+        //         //     "        <tr><th>Ledgers available</th>" +
+        //         //     "          <td>" + server_info.completeLedgers + "</td></tr>" +
+        //         //     "        <tr><th>hostID</th>" +
+        //         //     "          <td>" + server_info.hostID + "</td></tr>" +
+        //         //     "        <tr><th>Most Recent Validated Ledger Seq.</th>" +
+        //         //     "          <td>" + server_info.validatedLedger.ledgerVersion + "</td></tr>" +
+        //         //     "        <tr><th>Most Recent Validated Ledger Hash</th>" +
+        //         //     "          <td>" + server_info.validatedLedger.hash + "</td></tr>" +
+        //         //     "        <tr><th>Seconds since last ledger validated</th>" +
+        //         //     "          <td>" + server_info.validatedLedger.age + "</td></tr>" +
+        //         //     "      </table>";
+
+        //         maxLedgerVer = server_info.validatedLedger.ledgerVersion;
+        //     }).then(() => {
+        //         return api.disconnect();
+        //     }).then(() => {
+        //         console.log('done and disconnected.');
+        // }).catch(console.error);
+
+  </script>
+  <style type="text/css">
+    td, th { border: 1px solid black; padding: 5px; }
+    table { border-collapse: collapse; }
+  </style>
+</head>
+<body>
+    <input type="button" value="Create Address" onclick="onclick_createAddress()" />
+    <input type="button" value="Get a balance with address" onclick="onclick_getbalancewithaddress()" />
+
+    <table border="1" style="margin-top: 12px; width: 850px;">
+        <tr>
+            <td>Address</td>
+            <td><input type="text" id="tdAddress" value="" style="width: 320px;" /></td>
+        </tr>
+        <tr>
+            <td>Key</td>
+            <td id="tdKey"></td>
+        </tr>
+        <tr style="height: 80px;">
+            <td style="width: 100px;">Account Info</td>
+            <td id="tdAccount" style="width: 750px; overflow-x: scroll; max-width: 450px;"></td>
+        </tr>
+    </table>
+
+    <div id="layerBody"></div>
+
+    <table border="1" style="margin-top: 12px; width: 850px;">
+        <tr>
+            <td>To Address</td>
+            <td><input type="text" id="tdToAddress" value="" style="width: 320px;" /></td>
+        </tr>
+        <tr>
+            <td>Destination</td>
+            <td><input type="text" id="tdDestination" value="" style="width: 120px;" /></td>
+        </tr>
+        <tr>
+            <td>Amount</td>
+            <td>
+                <input type="text" id="tdAmount" value="" style="width: 120px;" />
+                <input type="button" value="Get a fee" onclick="onclick_getAmountAndFee()" />
+                <input type="button" value="Send XRP" onclick="onclick_BtnSendXRP()" />
+            </td>
+        </tr>
+        <tr style="height: 30px;">
+            <td colspan="2" style="width: 100%; text-align: right;">
+                <div id="layerAmount" style="float:left; padding-left: 20px;"></div>
+            </td>
+        </tr>
+        <tr style="height: 180px;">
+            <td colspan="2" style="padding: 5px; width: 850px; overflow-x: scroll; max-width: 850px;" id="tdStatus"></td>
+        </tr>
+    </table>
+
+    <table border="1" style="margin-top: 12px; width: 850px;">
+        <tr>
+            <td>To</td>
+            <td><input type="text" id="txtTransactionID" value="" style="width: 420px;" /></td>
+            <td><input type="button" value="Get Transaction Info." onclick="onclick_GetTrxInfo()" /></td>
+        </tr>
+        <tr style="height:40px;">
+            <td>Description</td>
+            <td id="tdDescriptionForTrx" colspan="2"></td>
+        </tr>
+    </table>
+</body>
+</html>
+
+<script>
+var aaa = (27.993436999999997).toString();
+var bbb = aaa.substr(0, aaa.indexOf('.'));
+var ccc = aaa.substr(aaa.indexOf('.') + 1, aaa.length);
+
+document.getElementById("tdDescriptionForTrx").innerHTML = aaa + "<br />";
+document.getElementById("tdDescriptionForTrx").innerHTML += bbb + "<br />";
+document.getElementById("tdDescriptionForTrx").innerHTML += ccc + "<br />";
+document.getElementById("tdDescriptionForTrx").innerHTML += ccc.substr(0, 6) + "<br />";
+document.getElementById("tdDescriptionForTrx").innerHTML += bbb + '.' + ccc.substr(0, 6) + "<br />";
+
+    function onclick_GetTrxInfo(){
+        var trxId = document.getElementById("txtTransactionID").value;
+
+        api.connect().then(function () {
+            return api.getTransaction(trxId);
+        }).then(info => {
+            document.getElementById("tdDescriptionForTrx").innerHTML = JSON.stringify(info);
+        }).then(() => {
+            return api.disconnect();
+        }).then(() => {
+            console.log('done and disconnected.');
+        }).catch(console.error);
+    }
+
+    function onclick_createAddress() {
+        var ripple = api.generateAddress();
+        document.getElementById("tdAddress").value = ripple.address;
+        document.getElementById("tdKey").innerHTML = ripple.secret;
+    }
+
+    function onclick_getbalancewithaddress() {
+        //var address = 'r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59';
+        var tdAddress = document.getElementById("tdAddress").value;
+
+        if (tdAddress.toString().length <= 0) {
+            document.getElementById("tdAddress").value = myAddress;
+        }
+
+        api.connect().then(function () {
+            return api.getAccountInfo(myAddress);
+        }).then(info => {
+            document.getElementById("tdAccount").innerHTML = JSON.stringify(info);
+        }).then(() => {
+            return api.disconnect();
+        }).then(() => {
+            console.log('done and disconnected.');
+        }).catch(console.error);
+    }
+
+    function onclick_BtnSendXRP() {
+        var toAddress = document.getElementById("tdToAddress").value;
+        var toDestination = document.getElementById("tdDestination").value;
+        var amount = document.getElementById("tdAmount").value;
+
+        if (toAddress.length > 0 && amount.length > 0) {
+            if (isNaN(amount)) {
+                alert("The Amount must be number.");
+                return;
+            }
+
+            SendXRP_toAddress(toAddress, toDestination, amount);
+        }
+        else {
+            alert("The address and amount is needed. Please input them.")
+        }
+    }
+
+    function onclick_getAmountAndFee() {
+        api.connect().then(() => {
+            return api.getFee();
+        }).then(fee => {
+            var amount = document.getElementById("tdAmount").value;
+
+            if (amount.length > 0 && !isNaN(amount)) {
+                var iamount = parseFloat(amount);
+
+                if (iamount > 0) {
+                    document.getElementById("layerAmount").innerHTML = "Your fee is " + parseFloat(fee).toString() + " XRP. " + "<br /><br />";;
+                    document.getElementById("layerAmount").innerHTML += (iamount - parseFloat(fee)).toString() + " will be received." + "<br /><br />";;
+                }
+                else {
+                    alert("The amount must be over 0.");
+                }
+            }
+        }).then(() => {
+            return api.disconnect();
+        }).then(() => {
+            console.log('done and disconnected.');
+        }).catch(console.error);
+    }
+
+    function SendXRP_toAddress(toAddress, toDestination, amount) {
+        var iamount = parseFloat(amount);
+        var opayment;
+
+        api.connect().then(() => {
+            return api.getFee();
+        }).then(fee => {
+            var aaa = (iamount - parseFloat(fee)).toString();
+            var bbb = aaa.substr(0, aaa.indexOf('.'));
+            var ccc = aaa.substr(aaa.indexOf('.') + 1, aaa.length);
+
+            var samount = bbb + '.' + ccc.substr(0, 6);
+
+            if (toDestination.length == 0) {
+                if (confirm("The Destination is empty. It's all right?")) {
+                    opayment = {
+                        "source": {
+                            "address": myAddress,
+                            "maxAmount": {
+                                "value": samount,
+                                "currency": "XRP"
+                            }
+                        },
+                        "destination": {
+                            "address": toAddress,
+                            "amount": {
+                                "value": samount,
+                                "currency": "XRP"
+                            }
+                        }
+                    };
+                }
+            }
+            else{
+                opayment = {
+                    "source": {
+                        "address": myAddress,
+                        "maxAmount": {
+                            "value": samount,
+                            "currency": "XRP"
+                        }
+                    },
+                    "destination": {
+                        "address": toAddress,
+                        "tag": parseInt(toDestination),
+                        "amount": {
+                            "value": samount,
+                            "currency": "XRP"
+                        }
+                    }
+                };
+            }
+
+            document.getElementById("tdStatus").innerHTML = JSON.stringify(opayment) + "<br /><br />";
+            return api.preparePayment(myAddress, opayment);
+        }).then(transaction => {
+            document.getElementById("tdStatus").innerHTML += " transaction : " + JSON.stringify(transaction) + "<br /><br />";
+            return api.sign(transaction.txJSON, mySecret);
+        }).then(signedTransaction => {
+            document.getElementById("tdStatus").innerHTML += JSON.stringify(signedTransaction) + "<br /><br />";
+            document.getElementById("txtTransactionID").value = signedTransaction.id;
+            return api.submit(signedTransaction.signedTransaction);
+        }).then(result => {
+            document.getElementById("tdStatus").innerHTML += JSON.stringify(result) + "<br />";
+        }).then(() => {
+            return api.disconnect();
+        }).then(() => {
+            console.log('done and disconnected.');
+        }).catch(error => {
+            document.getElementById("tdStatus").innerHTML += JSON.stringify(error) + "<br />";
+        });
+    }
+</script>
