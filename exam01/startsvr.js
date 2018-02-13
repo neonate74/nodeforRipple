@@ -7,7 +7,6 @@ var dt = require('./vdate');
 var uc = require('upper-case');
 
 http.createServer(function (req, res) {
-    
 
     var q = url.parse(req.url, true);
     var filename = "." + q.pathname;
@@ -19,7 +18,7 @@ http.createServer(function (req, res) {
         }
 
         res.writeHead(200, {'Content-Type': 'text/html'});
-        res.write(uc(data));
+        res.write(data);
         return res.end();
     });
 
